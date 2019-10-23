@@ -1,0 +1,36 @@
+{
+  "name": "wi-logs",
+  "version": "1.0.0",
+  "description": "logs user",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sockyone/wi-logs.git"
+  },
+  "keywords": [
+    "logs",
+    "influxdb",
+    "rabbitMq"
+  ],
+  "author": "Nam Phan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sockyone/wi-logs/issues"
+  },
+  "homepage": "https://github.com/sockyone/wi-logs#readme",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.4.0",
+    "amqp": "^0.2.7",
+    "amqplib": "^0.5.5",
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "config": "^3.2.3",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "influx": "^5.4.2",
+    "mqtt": "^3.0.0"
+  }
+}
