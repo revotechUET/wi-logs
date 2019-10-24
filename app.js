@@ -7,31 +7,42 @@ const config = require('config');
 
 const getJsonResponse = require('./src/helper/json-response');
 
-let elasticLink = process.env.ELASTICSEARCH || config.elasticsearch  + '/';
+let elasticLink = process.env.ELASTICSEARCH || config.elasticsearch;
 
 app.use(cors());
 app.use(bodyParser({extended: false}));
 app.use(bodyParser.json());
 
 app.post('/search', (req, res) => {
-    let obj = {query: {}};
+    let obj = {};
     let eLink = elasticLink;
-    if (req.body.database) {
-        eLink = elasticLink + database;
+    if (req.body.index) {
+        eLink = elasticLink + '/' + req.body.index + '/_search';
     } else {
-        res.status(512).json(getJsonResponse(512, 'Require match field in request', {}));
+        res.status(512).json(getJsonResponse(512, 'Require index field in request', {}));
         return;
     }
     if (req.body.match) {
-        obj.query.match = req.body.match;
-        if (req.body.time) {
-            obj.range = {
-                timestamp: {
-                    gte: "now-" + req.body.time.last
+        obj = {
+            query: {
+                bool: {
+                    must: [
+                        {term: req.body.match}
+                    ]
                 }
             }
         }
-        axios.post(eLink, obj)
+        if (req.body.time) {
+            let rangeQuery = {
+                range: {
+                    timestamp: {
+                        gte: "now-" + req.body.time.last
+                    }
+                }
+            }
+            obj.query.bool.must.push(rangeQuery);
+        }
+        axios.get(eLink, obj)
         .then((rs)=>{
             rs = rs.data;
             if (rs.hits) {
