@@ -57,6 +57,12 @@ app.post('/search', (req, res) => {
             }
             obj.query.bool.must.push(rangeQuery);
         }
+        if (req.body.fulltext) {
+            let match = {
+                match: fulltext
+            }
+            obj.query.bool.must.push(match);
+        }
         axios.get(eLink, obj)
             .then((rs) => {
                 rs = rs.data;
