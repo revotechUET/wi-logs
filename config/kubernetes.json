@@ -1,0 +1,6 @@
+{
+  "elasticsearch": "http://elasticsearch:9200",
+  "app": {
+    "port": "5011"
+  }
+}
