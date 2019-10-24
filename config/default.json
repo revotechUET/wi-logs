@@ -1,3 +1,6 @@
 {
-    "elasticsearch": "http://localhost:9200"
+    "elasticsearch": "http://localhost:9200",
+    "app": {
+        "port": "5011"
+    }
 }

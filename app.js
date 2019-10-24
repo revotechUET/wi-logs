@@ -56,6 +56,10 @@ app.post('/search', (req, res) => {
     }
 });
 
+let port = process.env.APP_PORT || config.app.port;
+app.listen(port, ()=>{
+    console.log("App listening in port:", port);
+});
 
 // const amqp = require('amqplib');
 
