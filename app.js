@@ -1,17 +1,32 @@
 const express = require('express');
 const app = express();
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const axios = require('axios');
 const config = require('config');
+const crypto = require('crypto');
 
+function getRandomHash() {
+    const current_date = (new Date()).valueOf().toString();
+    const random = Math.random().toString();
+    return (crypto.createHash('sha1').update(current_date + random).digest('hex'));
+}
+
+const serverId = getRandomHash();
 const getJsonResponse = require('./src/helper/json-response');
 
 let elasticLink = process.env.ELASTICSEARCH || config.elasticsearch;
 
+let bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '50mb', extended: true, type: 'application/json'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true, type: 'application/json'}));
 app.use(cors());
-app.use(bodyParser({extended: false}));
-app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+    res.json({
+        serverId: serverId,
+        service: "wi-logs"
+    })
+});
 
 app.post('/search', (req, res) => {
     let obj = {};
@@ -43,22 +58,24 @@ app.post('/search', (req, res) => {
             obj.query.bool.must.push(rangeQuery);
         }
         axios.get(eLink, obj)
-        .then((rs)=>{
-            rs = rs.data;
-            if (rs.hits) {
-                res.status(200).json(getJsonResponse(200, 'successfully', rs.hits));
-            } else {
-                res.status(512).json(getJsonResponse(512, 'Require match field in request', {}));
-            }
-        })
+            .then((rs) => {
+                rs = rs.data;
+                if (rs.hits) {
+                    res.status(200).json(getJsonResponse(200, 'successfully', rs.hits));
+                } else {
+                    res.status(512).json(getJsonResponse(512, 'Require match field in request', {}));
+                }
+            })
     } else {
         res.status(512).json(getJsonResponse(512, 'Require match field in request', {}));
     }
 });
 
 let port = process.env.APP_PORT || config.app.port;
-app.listen(port, ()=>{
+
+app.listen(port, () => {
     console.log("App listening in port:", port);
+    console.log("ENV = ", process.env.NODE_ENV);
 });
 
 // const amqp = require('amqplib');
